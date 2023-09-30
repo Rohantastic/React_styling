@@ -1,57 +1,68 @@
 import React, { useState } from 'react';
+import './index.css';
 
-import CourseGoalList from './components/CourseGoals/CourseGoalList/CourseGoalList';
-import CourseInput from './components/CourseGoals/CourseInput/CourseInput';
-import './App.css';
+function App() {
+  const [username, setUsername] = useState('');
+  const [age, setAge] = useState('');
+  const [userList, setUserList] = useState([]);
+  const [error, setError] = useState('');
 
-const App = () => {
-  const [courseGoals, setCourseGoals] = useState([
-    { text: 'Do all exercises!', id: 'g1' },
-    { text: 'Finish the course!', id: 'g2' }
-  ]);
+  const handleAddUser = () => {
+    if (username.trim() === '' || age === '') {
+      setError('Please enter both username and age.');
+      return;
+    }
 
-  const addGoalHandler = enteredText => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = [...prevGoals];
-      updatedGoals.unshift({ text: enteredText, id: Math.random().toString() });
-      return updatedGoals;
-    });
+    if (parseInt(age) < 0) {
+      setError('Age cannot be less than 0.');
+      return;
+    }
+
+    const newUser = {
+      username: username,
+      age: age,
+    };
+
+    setUserList([...userList, newUser]);
+    setUsername('');
+    setAge('');
+    setError('');
   };
-
-  const deleteItemHandler = goalId => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = prevGoals.filter(goal => goal.id !== goalId);
-      return updatedGoals;
-    });
-  };
-
-  let content = (
-    <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-  );
-
-  if (courseGoals.length > 0) {
-    content = (
-      <CourseGoalList items={courseGoals} onDeleteItem={deleteItemHandler} />
-    );
-  }
 
   return (
-    <div>
-      <section id="goal-form">
-        <CourseInput onAddGoal={addGoalHandler} />
-      </section>
-      <section id="goals">
-        {content}
-        {/* {courseGoals.length > 0 && (
-          <CourseGoalList
-            items={courseGoals}
-            onDeleteItem={deleteItemHandler}
-          />
-        ) // <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-        } */}
-      </section>
+    <div className="App">
+      <h1>User List</h1>
+      {error && <p className="error">{error}</p>}
+      <div>
+        <label htmlFor="username">Username:</label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <label htmlFor="age">Age:</label>
+        <input
+          type="number"
+          id="age"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+        />
+      </div>
+      <button onClick={handleAddUser}>Add User</button>
+
+      <div className="user-list">
+        {userList.map((user, index) => (
+          <div key={index} className="user-item">
+            <p>Username: {user.username}</p>
+            <p>Age: {user.age}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
-};
+}
 
 export default App;
